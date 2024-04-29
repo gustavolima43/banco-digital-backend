@@ -1,4 +1,4 @@
-const {contas} = require('../data/bancoDeDados');
+let {contas} = require('../data/bancoDeDados');
 
 const listarContas = (req, res) => {
     res.json(contas)
@@ -31,7 +31,6 @@ const criarConta = (req, res) => {
 
     // if(contaCPF || contaEmail) return res.json({mensagem: "Já existe uma conta com o cpf ou e-mail informado!"})
 
-    console.log('chegou')
     contas.push(criandoConta);
     return res.status(201).json(criandoConta.usuario);
 }
@@ -61,11 +60,50 @@ const atualizarConta = (req, res) => {
     return res.status(200).json(conta);
 }
 
+const deleteConta = (req, res) => {
+    const {numeroConta} = req.params;
+    const conta = contas.find(conta => conta.numero == numeroConta);
+    if (!conta) {
+        return res.status(404).json({ mensagem: 'A conta não existe.' });
+    }
+    console.log('chegou')
+    if(conta.saldo > 0) {
+        return res.status(404).json({mensagem: "A conta só pode ser removida se o saldo for zero!"})
+    }
+    contas = contas.filter((conta) => {
+        return conta.numero !== Number(numeroConta);
+    });
 
+    return res.status(204).send();
+}
+
+const depositar = (req, res) => {
+    const {numero_conta, valor} = req.body;
+    
+    if (!numero_conta || !valor) {
+        return res.status(400).json({mensagem: "O número da conta e o valor são obrigatórios!"});
+    }
+
+    const conta = contas.find(conta => conta.numero == numero_conta);
+    
+    if(valor <= 0) {
+        return res.status(404).json();
+    }
+    
+    conta.saldo += valor;
+
+    res.status(200).json({
+        data: new Date(),
+        numero_conta,
+        valor
+    })
+}
 
 
 module.exports = {
     listarContas,
     criarConta,
-    atualizarConta
+    atualizarConta,
+    deleteConta,
+    depositar
 }
