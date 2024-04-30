@@ -1,3 +1,4 @@
+const bancoDeDados = require('../data/bancoDeDados');
 let {contas} = require('../data/bancoDeDados');
 
 const listarContas = (req, res) => {
@@ -92,11 +93,50 @@ const depositar = (req, res) => {
     
     conta.saldo += valor;
 
-    res.status(200).json({
+    let deposito = {
         data: new Date(),
         numero_conta,
         valor
-    })
+    }
+
+    bancoDeDados.depositos.push(deposito);
+
+    res.status(200).json(deposito)
+}
+
+const sacar = (req, res) => {
+    const {numero_conta, valor, senha} = req.body;
+    
+    if (!numero_conta || !valor || !senha) {
+        return res.status(400).json({mensagem: "O número da conta e o valor são obrigatórios!"});
+    }
+
+    const conta = contas.find(conta => conta.numero === numero_conta);
+
+    if(!conta) {
+        return res.json({mensagem: "Essa conta não existe!"})
+    }
+
+    const acesso = contas.find(conta => conta.usuario.senha === senha);
+
+    if(!acesso) return res.json({mensagem: "Senha incorreta!"})
+
+    if(valor < 0) {
+        return res.json({mensagem: "O valor não pode ser menor que zero!"})
+    }
+
+    if(conta.usuario.saldo < valor){
+        return res.json({mensagem: "Saldo insuficiente!"});
+    } else {
+        conta.usuario.saldo -= valor;
+    }
+
+    return res.send()
+
+}
+
+const transferir = (req, res) => {
+    
 }
 
 
@@ -105,5 +145,7 @@ module.exports = {
     criarConta,
     atualizarConta,
     deleteConta,
-    depositar
+    depositar,
+    sacar,
+    transferir
 }
