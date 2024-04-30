@@ -12,9 +12,10 @@ rotas.put('/contas/:numeroConta/usuario', usuarioExistente, contas.atualizarCont
 rotas.delete('/contas/:numeroConta', contas.deleteConta);
 
 rotas.post('/trasacoes/depositar', transacoes.depositar);
-rotas.post('/transacoes/sacar', transacoes.sacar)
-rotas.post('/transacoes/transferir', transacoes.transferir)
-rotas.get('/contas/saldo', validarConta, transacoes.saldo)
+rotas.post('/transacoes/sacar', transacoes.sacar);
+rotas.post('/transacoes/transferir', transacoes.transferir);
+rotas.get('/contas/saldo', validarConta, transacoes.saldo);
+rotas.get('contas/extrato', validarConta, transacoes.extrato);
 
 
 module.exports = rotas;

@@ -1,5 +1,5 @@
 
-const { contas, depositos }= require('../data/bancoDeDados');
+const { contas, saques, depositos, transferencias }= require('../data/bancoDeDados');
 
 const depositar = (req, res) => {
     const {numero_conta, valor} = req.body;
@@ -24,7 +24,7 @@ const depositar = (req, res) => {
 
     depositos.push(deposito);
 
-    res.status(200).json(deposito)
+    res.status(200).json(deposito);
 }
 
 const sacar = (req, res) => {
@@ -53,8 +53,15 @@ const sacar = (req, res) => {
     } else {
         conta.saldo -= valor;
     }
+    const saque = {
+        data: new Date(),
+        numero_conta: numero_conta,
+        valor: valor,
+    }
 
-    return res.send()
+    saques.push(saque);
+
+    return res.send();
 
 }
 
@@ -81,7 +88,7 @@ const transferir = (req, res) => {
         valor: valor
     }
 
-    bancoDeDados.transferencias.push(registro);
+    transferencias.push(registro);
     return res.send()
 }
 
@@ -93,6 +100,20 @@ const saldo = (req, res) => {
     
 }
 const extrato = (req, res) => {
+    const { numero_conta } = req.query;
+    
+    const depositosConta = depositos.filter(deposito => deposito.numero_conta === Number(numero_conta));
+    const saquesConta = saques.filter(saque => saque.numero_conta === Number(numero_conta));
+    const transferenciasEnviadas = transferencias.filter(transferencia => transferencia.numero_conta_origem === Number(numero_conta));
+    const transferenciasRecebidas = transferencias.filter(transferencia => transferencia.numero_conta_destino === Number(numero_conta));
+
+    return res.status(200).json({
+        "depositos": depositosConta,
+        "saques": saquesConta,
+        "transferenciasEnviadas": transferenciasEnviadas,
+        "transferenciasRecebidas": transferenciasRecebidas
+    })
+
 
 }
 module.exports = {
