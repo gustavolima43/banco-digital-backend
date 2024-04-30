@@ -3,10 +3,6 @@ const { contas, saques, depositos, transferencias }= require('../data/bancoDeDad
 
 const depositar = (req, res) => {
     const {numero_conta, valor} = req.body;
-    
-    if (!numero_conta || !valor) {
-        return res.status(400).json({mensagem: "O número da conta e o valor são obrigatórios!"});
-    }
 
     const conta = contas.find(conta => conta.numero == numero_conta);
     
@@ -29,10 +25,6 @@ const depositar = (req, res) => {
 
 const sacar = (req, res) => {
     const {numero_conta, valor, senha} = req.body;
-    
-    if (!numero_conta || !valor || !senha) {
-        return res.status(400).json({mensagem: "O número da conta e o valor são obrigatórios!"});
-    }
 
     const conta = contas.find(conta => conta.numero === numero_conta);
 

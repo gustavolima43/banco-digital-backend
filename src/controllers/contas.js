@@ -1,18 +1,10 @@
-const bancoDeDados = require('../data/bancoDeDados');
 let {contas} = require('../data/bancoDeDados');
 
 const listarContas = (req, res) => {
-    res.json(contas)
+    res.status(200).json(contas)
 }
 
-const criarConta = (req, res) => {
-    const {nome, cpf, data_nascimento, telefone, email, senha} = req.body;
-    
-    if (!nome || !cpf || !data_nascimento || !telefone || !email || !senha) {
-        return res.status(400).json('Todos os campos são obrigatórios')
-    }
-    
-        
+const criarConta = (req, res) => {    
     let criandoConta = {
             numero: contas.length + 1,
             saldo: 0,
@@ -24,33 +16,18 @@ const criarConta = (req, res) => {
                 email, 
                 senha,
             }
-
             
     }
-    // const contaCPF = contas.find(conta => conta.usuario.cpf === criandoConta.usuario.cpf);
-    // const contaEmail = contas.find(conta => conta.usuario.email === criandoConta.usuario.email);
-
-    // if(contaCPF || contaEmail) return res.json({mensagem: "Já existe uma conta com o cpf ou e-mail informado!"})
-
+    
     contas.push(criandoConta);
-    return res.status(201).json(criandoConta.usuario);
+    return res.status(201).json();
 }
 
 const atualizarConta = (req, res) => {
-    const {nome, cpf, data_nascimento, telefone, email, senha} = req.body;
     const {numeroConta} = req.params;
-    
-    if (!nome || !cpf || !data_nascimento || !telefone || !email || !senha) {
-        return res.status(400).json('Todos os campos são obrigatórios')
-    }
-    // const contaCPF = contas.find(conta => conta.usuario.cpf === criandoConta.usuario.cpf);
-    // const contaEmail = contas.find(conta => conta.usuario.email === criandoConta.usuario.email);
-
-    // if(contaCPF || contaEmail) return res.json({mensagem: "Já existe uma conta com o cpf ou e-mail informado!"})
-    
+           
     const conta = contas.find(conta => conta.numero == numeroConta);
 
-    
     conta.usuario.nome = nome;
     conta.usuario.cpf = cpf;
     conta.usuario.data_nascimento = data_nascimento;
@@ -58,7 +35,7 @@ const atualizarConta = (req, res) => {
     conta.usuario.email = email;
     conta.usuario.senha = senha;
 
-    return res.status(200).json(conta);
+    return res.status(200).send();
 }
 
 const deleteConta = (req, res) => {
@@ -67,7 +44,6 @@ const deleteConta = (req, res) => {
     if (!conta) {
         return res.status(404).json({ mensagem: 'A conta não existe.' });
     }
-    console.log('chegou')
     if(conta.saldo > 0) {
         return res.status(404).json({mensagem: "A conta só pode ser removida se o saldo for zero!"})
     }
@@ -77,8 +53,6 @@ const deleteConta = (req, res) => {
 
     return res.status(204).send();
 }
-
-
 
 
 module.exports = {
