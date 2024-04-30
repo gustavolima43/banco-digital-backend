@@ -162,6 +162,10 @@ const transferir = (req, res) => {
     return res.send()
 }
 
+const saldo = (req, res) => [
+    
+]
+
 
 module.exports = {
     listarContas,
@@ -170,5 +174,6 @@ module.exports = {
     deleteConta,
     depositar,
     sacar,
-    transferir
+    transferir,
+    saldo
 }
