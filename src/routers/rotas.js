@@ -1,5 +1,5 @@
 const express = require('express');
-const {camposObrigatorios, usuarioExistente, validarSenha, validarConta, camposObrigatoriosTransacoes, encontrarConta } = require('../middlewares/intermediarios')
+const {camposObrigatorios, usuarioExistente, validarSenha, validarConta, camposObrigatoriosTransacoes, encontrarConta, camposObrigatoriosNumeroSenha } = require('../middlewares/intermediarios')
 const contas = require('../controllers/contas');
 const transacoes = require('../controllers/transacoes');
 const rotas = express();
@@ -12,8 +12,8 @@ rotas.delete('/contas/:numeroConta', contas.deleteConta);
 rotas.post('/trasacoes/depositar', camposObrigatoriosTransacoes, encontrarConta, transacoes.depositar);
 rotas.post('/transacoes/sacar', camposObrigatoriosTransacoes, encontrarConta, transacoes.sacar);
 rotas.post('/transacoes/transferir', transacoes.transferir);
-rotas.get('/contas/saldo', validarConta, transacoes.saldo);
-rotas.get('/contas/extrato', validarConta, transacoes.extrato);
+rotas.get('/contas/saldo', camposObrigatoriosNumeroSenha, validarConta,  transacoes.saldo);
+rotas.get('/contas/extrato', camposObrigatoriosNumeroSenha, validarConta, transacoes.extrato);
 
 
 module.exports = rotas;

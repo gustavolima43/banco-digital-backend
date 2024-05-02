@@ -59,6 +59,15 @@ const camposObrigatoriosTransacoes = (req, res, next) => {
     next();
 }
 
+const camposObrigatoriosNumeroSenha = (req, res, next) => {
+    const {numero_conta, senha} = req.query;
+
+    if (!numero_conta || !senha) {
+        return res.status(400).json({mensagem: "O número da conta e a senha são obrigatórios!"});
+    }
+    next();
+}
+
 const encontrarConta = (req, res, next) => {
     const {numero_conta} = req.body;
 
@@ -76,6 +85,7 @@ module.exports = {
     validarSenha,
     validarConta,
     camposObrigatoriosTransacoes,
-    encontrarConta
+    encontrarConta,
+    camposObrigatoriosNumeroSenha
 }
 
