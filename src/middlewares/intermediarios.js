@@ -59,12 +59,23 @@ const camposObrigatoriosTransacoes = (req, res, next) => {
     next();
 }
 
+const encontrarConta = (req, res, next) => {
+    const {numero_conta} = req.body;
+
+    const conta = contas.find(conta => conta.numero === Number(numero_conta));
+    
+    if(!conta) {
+        return res.status(404).json({mensagem: "Conta bancária não encontrada!"})
+    }
+    next();
+}
 
 module.exports = {
     camposObrigatorios,
     usuarioExistente,
     validarSenha,
     validarConta,
-    camposObrigatoriosTransacoes
+    camposObrigatoriosTransacoes,
+    encontrarConta
 }
 

@@ -3,8 +3,6 @@ const { contas, saques, depositos, transferencias }= require('../data/bancoDeDad
 
 const depositar = (req, res) => {
     const {numero_conta, valor} = req.body;
-
-    const conta = contas.find(conta => conta.numero == numero_conta);
     
     if(valor <= 0) {
         return res.status(404).json();
@@ -20,21 +18,11 @@ const depositar = (req, res) => {
 
     depositos.push(deposito);
 
-    return res.status(200).json(deposito);
+    return res.status(200).json();
 }
 
 const sacar = (req, res) => {
     const {numero_conta, valor, senha} = req.body;
-
-    const conta = contas.find(conta => conta.numero === Number(numero_conta));
-    
-    if(!conta) {
-        return res.status(404).json({mensagem: "Conta bancária não encontrada!"})
-    }
-
-    const acesso = contas.find(conta => conta.usuario.senha === senha);
-
-    if(!acesso) return res.json({mensagem: "Senha incorreta!"})
 
     if(valor < 0) {
         return res.status(404).json({mensagem: "O valor não pode ser menor que zero!"})
