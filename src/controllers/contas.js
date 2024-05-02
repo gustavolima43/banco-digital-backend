@@ -1,12 +1,13 @@
-let {contas} = require('../data/bancoDeDados');
+let {contas, identificadorConta} = require('../data/bancoDeDados');
 
 const listarContas = (req, res) => {
     res.status(200).json(contas)
 }
 
-const criarConta = (req, res) => {    
+const criarConta = (req, res) => {
+    const {nome, cpf, data_nascimento, telefone, email, senha} = req.body;    
     let criandoConta = {
-            numero: contas.length + 1,
+            numero: identificadorConta++,
             saldo: 0,
             usuario: {
                 nome, 
@@ -24,6 +25,7 @@ const criarConta = (req, res) => {
 }
 
 const atualizarConta = (req, res) => {
+    const {nome, cpf, data_nascimento, telefone, email, senha} = req.body;  
     const {numeroConta} = req.params;
            
     const conta = contas.find(conta => conta.numero == numeroConta);
@@ -35,7 +37,7 @@ const atualizarConta = (req, res) => {
     conta.usuario.email = email;
     conta.usuario.senha = senha;
 
-    return res.status(200).send();
+    return res.status(204).send();
 }
 
 const deleteConta = (req, res) => {

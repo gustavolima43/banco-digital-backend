@@ -13,23 +13,23 @@ const depositar = (req, res) => {
     conta.saldo += valor;
 
     let deposito = {
-        data: new Date(),
+        data: new Date().toISOString(),
         numero_conta,
         valor
     }
 
     depositos.push(deposito);
 
-    res.status(200).json(deposito);
+    return res.status(200).json(deposito);
 }
 
 const sacar = (req, res) => {
     const {numero_conta, valor, senha} = req.body;
 
-    const conta = contas.find(conta => conta.numero === numero_conta);
-
+    const conta = contas.find(conta => conta.numero === Number(numero_conta));
+    
     if(!conta) {
-        return res.json({mensagem: "Essa conta não existe!"})
+        return res.status(404).json({mensagem: "Conta bancária não encontrada!"})
     }
 
     const acesso = contas.find(conta => conta.usuario.senha === senha);
@@ -37,51 +37,58 @@ const sacar = (req, res) => {
     if(!acesso) return res.json({mensagem: "Senha incorreta!"})
 
     if(valor < 0) {
-        return res.json({mensagem: "O valor não pode ser menor que zero!"})
+        return res.status(404).json({mensagem: "O valor não pode ser menor que zero!"})
     }
 
     if(conta.usuario.saldo < valor){
-        return res.json({mensagem: "Saldo insuficiente!"});
+        return res.status(400).json({mensagem: "Saldo insuficiente!"});
     } else {
         conta.saldo -= valor;
     }
     const saque = {
-        data: new Date(),
+        data: new Date().toISOString(),
         numero_conta: numero_conta,
         valor: valor,
     }
 
     saques.push(saque);
 
-    return res.send();
+    return res.status(200).send();
 
 }
 
 const transferir = (req, res) => {
-    const {numero_conta_origem, numero_conta_destino, valor, senha} = req.params;
+    const {numero_conta_origem, numero_conta_destino, valor, senha} = req.body;
 
-    const conta_origem = contas.find(conta => conta.numero === numero_conta_origem);
-    const conta_destino = contas.find(conta => conta.numero === numero_conta_destino);
+    const conta_origem = contas.find(conta => conta.numero === Number(numero_conta_origem));
+    const conta_destino = contas.find(conta => conta.numero === Number(numero_conta_destino));
+
+    if (conta_origem === conta_destino) {
+        return res.status(404).json({mensagem: "Não é possível realizar essa transação"})
+    }
+    
     if(!conta_origem || !conta_destino) {
-        return res.json({mensagem: "Conta inexistente!"});
+        return res.status(404).json({mensagem: "Conta inexistente!"});
     }
 
     if(conta_origem.usuario.senha !== senha) {
-        return res.json({mensagem: "Senha incorreta!"});
+        return res.staus(404).json({mensagem: "Senha incorreta!"});
     }
-
+    if(valor > conta_origem.saldo){
+        return res.status(404).json({mensagem: "Saldo insuficiente!"})
+    }
     conta_origem.saldo -= valor;
     conta_destino.saldo += valor;
 
     let registro = {
-        data: new Date(),
+        data: new Date().toISOString(),
         numero_conta_origem: numero_conta_origem,
         numero_conta_destino: numero_conta_destino,
         valor: valor
     }
 
     transferencias.push(registro);
-    return res.send()
+    return res.status(200).send();
 }
 
 const saldo = (req, res) => {
@@ -93,18 +100,14 @@ const saldo = (req, res) => {
 }
 const extrato = (req, res) => {
     const { numero_conta } = req.query;
-    
-    const depositosConta = depositos.filter(deposito => deposito.numero_conta === Number(numero_conta));
-    const saquesConta = saques.filter(saque => saque.numero_conta === Number(numero_conta));
-    const transferenciasEnviadas = transferencias.filter(transferencia => transferencia.numero_conta_origem === Number(numero_conta));
-    const transferenciasRecebidas = transferencias.filter(transferencia => transferencia.numero_conta_destino === Number(numero_conta));
 
-    return res.status(200).json({
-        "depositos": depositosConta,
-        "saques": saquesConta,
-        "transferenciasEnviadas": transferenciasEnviadas,
-        "transferenciasRecebidas": transferenciasRecebidas
-    })
+    const extrato = {
+        depositos: depositos.filter(deposito => deposito.numero_conta === numero_conta),
+        saques: saques.filter(saque => saque.numero_conta === numero_conta),
+        transferenciasEnviadas: transferencias.filter(transferencia => transferencia.numero_conta_origem === numero_conta),
+        transferenciasRecebidas: transferencias.filter(transferencia => transferencia.numero_conta_destino === numero_conta)
+    }
+    return res.status(200).json({extrato});
 
 
 }

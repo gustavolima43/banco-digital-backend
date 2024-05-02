@@ -13,7 +13,7 @@ rotas.post('/trasacoes/depositar', camposObrigatoriosTransacoes, transacoes.depo
 rotas.post('/transacoes/sacar', camposObrigatoriosTransacoes, transacoes.sacar);
 rotas.post('/transacoes/transferir', transacoes.transferir);
 rotas.get('/contas/saldo', validarConta, transacoes.saldo);
-rotas.get('contas/extrato', validarConta, transacoes.extrato);
+rotas.get('/contas/extrato', validarConta, transacoes.extrato);
 
 
 module.exports = rotas;

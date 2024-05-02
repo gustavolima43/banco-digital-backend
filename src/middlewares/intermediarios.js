@@ -13,8 +13,8 @@ const usuarioExistente = (req, res, next) => {
     const {cpf, email} = req.body;
     const contaCPF = contas.find(conta => conta.usuario.cpf === cpf);
     const contaEmail = contas.find(conta => conta.usuario.email === email);
-    console.log('entrou')
-    if(contaCPF || contaEmail) return res.json({mensagem: "Já existe uma conta com o cpf ou e-mail informado!"})
+
+    if(contaCPF || contaEmail) return res.status(404).json({mensagem: "Já existe uma conta com o cpf ou e-mail informado!"})
     
     next()
 
@@ -23,11 +23,11 @@ const validarSenha = (req, res, next) => {
     const { senha_banco } = req.query;
 
     if(!senha_banco) {
-        return res.json('Senha não informada');
+        return res.status(400).json('Senha não informada');
     }
 
     if(senha_banco !== banco.senha) {
-        return res.json({mensagem: "A senha do banco informada é inválida!"});
+        return res.status(404).json({mensagem: "A senha do banco informada é inválida!"});
     }
 
     next();
@@ -40,7 +40,7 @@ const validarConta = (req, res, next) => {
     const conta = contas.find((conta) => conta.numero === Number(numero_conta));
    
     if(!conta) {
-        return res.status(404).json({mensagem: "Conta não encontrada"});
+        return res.status(400).json({mensagem: "Conta não encontrada"});
     }
 
     if(conta.usuario.senha === senha) {
@@ -50,12 +50,13 @@ const validarConta = (req, res, next) => {
     }
 }
 
-const camposObrigatoriosTransacoes = (req, res) => {
+const camposObrigatoriosTransacoes = (req, res, next) => {
     const {numero_conta, valor} = req.body;
 
     if (!numero_conta || !valor) {
         return res.status(400).json({mensagem: "O número da conta e o valor são obrigatórios!"});
     }
+    next();
 }
 
 

@@ -1,4 +1,5 @@
 module.exports = {
+    identificadorConta: 1,
     banco: {
         nome: 'Cubos Bank',
         numero: '123',
